@@ -57,3 +57,30 @@ Deployment:
 
 Deploy the frontend and backend to appropriate hosting platforms (e.g., Heroku, AWS, Firebase).
 Set up a database server for data storage.
+
+const express = require('express');
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+
+// Serve the frontend files
+app.use(express.static(__dirname + '/public'));
+
+// Socket.IO events
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('chat message', (message) => {
+    console.log('Message: ' + message);
+    io.emit('chat message', message);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+const port = process.env.PORT || 3000;
+http.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
